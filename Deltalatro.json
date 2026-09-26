@@ -1,0 +1,20 @@
+{
+	"id": "Deltalatro",
+	"name": "Deltalatro",
+	"author": [
+		"IrisCantArt",
+		"EricTheToon"
+
+	],
+	"description": "a baltro mod to add deltarune items to balatro.",
+	"prefix": "delta",
+	"main_file": "main.lua",
+	"priority": 0,
+	"badge_colour": "ffa500",
+	"badge_text_colour": "",
+	"version": "0",
+	"dependencies": [
+		"Steamodded (>=1.0.0~BETA-1503a)",
+		"Talisman (>=2.7)"
+	]
+}
