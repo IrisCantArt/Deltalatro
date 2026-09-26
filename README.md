@@ -8,7 +8,7 @@ Sans: changes shop to be open,closed,clopen
 
 the roaring knight:x0.5 mult per card it kills
 
-ralsai: who gives random xmult --bad idea may chnage in later release 
+ralsai: who gives random xmult --bad idea may chanage in later release 
 
 ITEMS
 
