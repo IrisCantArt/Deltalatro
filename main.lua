@@ -58,10 +58,6 @@ SMODS.Joker{
     end
 }
 
----------------------------------
-------tenna was also kiulled-----
----------------------------------
-
 ----------------------------------
 -------MIKE CODE was killed ------
 ----------------------------------
@@ -369,6 +365,7 @@ SMODS.Joker{
             "Every Blind is a {C:attention}Boss Blind{}",
             "Gain {X:mult,C:white}X#1#{} Mult",
             "for every {C:attention}Boss Blind{} defeated"
+            "{C:inactive}art by Vega{}"
         }
     },
     atlas = "Jokers",
