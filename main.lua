@@ -10,7 +10,12 @@ SMODS.Atlas{
     py = 95 -- height of one card
 }
 
-
+SMODS.Atlas({
+    key = 'modicon',
+    path = 'modicon.png',
+    px = '32',
+    py = '32'
+})
 
 ----------------------------------------------
 ------------Spamton code start---------------------
