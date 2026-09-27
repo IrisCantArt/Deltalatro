@@ -10,6 +10,8 @@ the roaring knight:x0.5 mult per card it kills
 
 ralsai: who gives random xmult --bad idea may chanage in later release 
 
+Tenna: Every Blind is a Boss Blind Gain +1 XMult for every Boss Blind defeated
+
 ITEMS
 
 Toby fox:choose a joker a consumable and next blind
@@ -23,3 +25,7 @@ Tenna's Marvelous Mystery Board: Disable the current blind
 Rouxls Kaard: thoust blind shalt be 50% easier
 
 So I haveth a Laser Pointere: selleth any item (including from shop)
+
+BLINDS:
+
+TV time: answer questions about both deltarune and balatro while playing cards 2 rong = loosing 
