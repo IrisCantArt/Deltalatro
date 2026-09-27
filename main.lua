@@ -710,51 +710,74 @@ SMODS.Consumable{
 ---------------kaard code start -------------------
 ---------------------------------------------------
 
-SMODS.Consumable {
-    key = 'rouxls',
-    set = 'Items',
-    atlas = 'Jokers', 
+SMODS.Joker{
+    key = "rouxls",
+    atlas = "Jokers",
     pos = { x = 7, y = 0 },
+
+    loc_txt = {
+        name = "Rouxls Kaard",
+        text = {
+            "Scoring {C:attention}Stone{} cards make the",
+            "Blind requirement {C:attention}#1#%{} smaller",
+            "When {C:money}sold{}, instantly make the",
+            "Blind requirement {C:attention}50%{} smaller",
+            "{C:inactive}art by Vega{}"
+        }
+    },
+
+    rarity = 3,
     cost = 6,
     unlocked = true,
     discovered = true,
- 
-    loc_txt = {
-        name = "Rouxls Kaard",   -- he kills both in multiplayer thanks mp
-        text = {
-            "thoust blind shalt be 50% easier",     --cant fix fortlatro x multiplayer
-            "art by Vega", 
+    blueprint_compat = true,
+
+    config = {
+        extra = {
+            percent = 0.15
         }
     },
- 
-    
-    can_use = function(self, card)
-        return G.GAME.blind ~= nil and not G.GAME.blind.defeated
+
+    loc_vars = function(self, info_queue, card)
+        return {
+            vars = { card.ability.extra.percent * 100 }
+        }
     end,
- 
-    
-    use = function(self, card, area, copier)
-        if not G.GAME.blind then return end
- 
+
+    calculate = function(self, card, context)
         
         local function tal_big(x)
             if to_big then return to_big(x) end
             return x
         end
- 
-        local original = G.GAME.blind.chips
-        local new_chips = math.floor(original * 0.5)
- 
+
         
-        if tal_big(new_chips) < tal_big(1) then
-            new_chips = tal_big(1)
+        if context.individual and context.cardarea == G.play then
+            local target = context.other_card
+            if target and target.ability.effect == 'Stone Card' and G.GAME.blind then
+                local new_chips = math.floor(G.GAME.blind.chips * (1 - card.ability.extra.percent))
+                if tal_big(new_chips) < tal_big(1) then
+                    new_chips = tal_big(1)
+                end
+                G.GAME.blind.chips = new_chips
+                if G.HUD_blind then
+                    G.HUD_blind.chips = new_chips
+                end
+            end
         end
- 
-        G.GAME.blind.chips = new_chips
-        if G.HUD_blind then
-            G.HUD_blind.chips = new_chips
+
+        
+        if context.selling_self and G.GAME.blind then
+            local new_chips = math.floor(G.GAME.blind.chips * 0.5)
+            if tal_big(new_chips) < tal_big(1) then
+                new_chips = tal_big(1)
+            end
+            G.GAME.blind.chips = new_chips
+            if G.HUD_blind then
+                G.HUD_blind.chips = new_chips
+            end
         end
-    end,
+    end
 }
  
 
