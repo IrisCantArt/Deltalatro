@@ -9,7 +9,7 @@
 	"description": "a baltro mod to add deltarune items to balatro.",
 	"prefix": "delta",
 	"main_file": "main.lua",
-	"priority": 0,
+	"priority": -90,
 	"badge_colour": "ffa500",
 	"badge_text_colour": "",
 	"version": "0",

@@ -358,10 +358,217 @@ SMODS.Joker{
 }
 
 ---------------------------------------------------
----------------ralsi CODE end ---------------------
+---------------tenna CODE start -------------------
 ---------------------------------------------------
 
-SMODS.Atlas({ key = "Blinds", atlas_table = "ANIMATION_ATLAS", path = "Blinds.png", px = 34, py = 34, frames = 21 })
+SMODS.Joker{
+    key = "tenna",
+    loc_txt = {
+        name = "Tenna",
+        text = {
+            "Every Blind is a {C:attention}Boss Blind{}",
+            "Gain {X:mult,C:white}X#1#{} Mult",
+            "for every {C:attention}Boss Blind{} defeated"
+        }
+    },
+    atlas = "Jokers",
+    pos = { x = 0, y = 1 },
+
+    config = {
+        extra = {
+            xmult = 1
+        }
+    },
+
+    rarity = 3,
+    cost = 8,
+    blueprint_compat = true,
+
+    loc_vars = function(self, info_queue, card)
+        return {
+            vars = {
+                card.ability.extra.xmult
+            }
+        }
+    end,
+
+    update = function(self, card)
+        card.anim_frame = card.anim_frame or 0
+        card.anim_timer = card.anim_timer or 0
+        card.last_render = card.last_render or G.TIMERS.REAL
+
+        local fps = 9
+        local max_frame = 5
+        local now = G.TIMERS.REAL
+        local delta = now - card.last_render
+        card.last_render = now
+
+        card.anim_timer = card.anim_timer + delta
+
+        if card.anim_timer >= 1 / fps then
+            card.anim_timer = 0
+            card.anim_frame = (card.anim_frame + 1) % (max_frame + 1)
+
+            if card.children and card.children.floating_sprite then
+                card.children.floating_sprite:set_sprite_pos({
+                    x = card.anim_frame,
+                    y = 0
+                })
+            end
+        end
+
+        if G.GAME
+        and G.GAME.blind
+        and G.GAME.blind.boss == false then
+            G.GAME.blind.boss = true
+        end
+    end,
+
+    add_to_deck = function(self, card, from_debuff)
+        if not G.GAME or not G.GAME.round_resets then
+            return
+        end
+
+        local blinds = {}
+
+        if G.P_BLINDS then
+            for key, blind in pairs(G.P_BLINDS) do
+                if blind and blind.name then
+                    blinds[#blinds + 1] = key
+                end
+            end
+        end
+
+        if #blinds > 0 then
+            if G.GAME.round_resets.blind_choices.Small then
+                G.GAME.round_resets.blind_choices.Small =
+                    pseudorandom_element(blinds, pseudoseed("tenna_small"))
+            end
+
+            if G.GAME.round_resets.blind_choices.Big then
+                G.GAME.round_resets.blind_choices.Big =
+                    pseudorandom_element(blinds, pseudoseed("tenna_big"))
+            end
+
+            if G.GAME.round_resets.blind_choices.Boss then
+                G.GAME.round_resets.blind_choices.Boss =
+                    pseudorandom_element(blinds, pseudoseed("tenna_boss"))
+            end
+        end
+    end,
+
+    calculate = function(self, card, context)
+        if context.joker_main then
+            return {
+                Xmult = card.ability.extra.xmult
+            }
+        end
+
+        if context.end_of_round
+        and not context.repetition
+        and not context.individual
+        and G.GAME.blind
+        and G.GAME.blind.boss then
+
+            card.ability.extra.xmult =
+                card.ability.extra.xmult + 1
+
+            return {
+                message = "+1 XMult",
+                colour = G.C.MULT
+            }
+        end
+
+        if context.setting_blind then
+            if G.GAME.blind then
+                G.GAME.blind.boss = true
+            end
+        end
+    end
+}
+
+if not _G.__TENNA_RESET_BLINDS_HOOK then
+    _G.__TENNA_RESET_BLINDS_HOOK = true
+
+    local tenna_original_reset_blinds = reset_blinds
+
+    function reset_blinds()
+        tenna_original_reset_blinds()
+
+        if not G.GAME
+        or not G.GAME.round_resets
+        or not G.jokers
+        or not G.jokers.cards then
+            return
+        end
+
+        local tenna_owned = false
+
+        for _, joker in ipairs(G.jokers.cards) do
+            if joker.config
+            and joker.config.center
+            and joker.config.center.key == "j_delta_tenna" then
+                tenna_owned = true
+                break
+            end
+        end
+
+        if not tenna_owned then
+            return
+        end
+
+        local blinds = {}
+
+        if G.P_BLINDS then
+            for key, blind in pairs(G.P_BLINDS) do
+                if blind and blind.name then
+                    blinds[#blinds + 1] = key
+                end
+            end
+        end
+
+        if #blinds == 0 then
+            return
+        end
+
+        local ante = G.GAME.round_resets.ante or 1
+
+        if G.GAME.round_resets.blind_choices.Small then
+            G.GAME.round_resets.blind_choices.Small =
+                pseudorandom_element(
+                    blinds,
+                    pseudoseed("tenna_small_" .. ante)
+                )
+        end
+
+        if G.GAME.round_resets.blind_choices.Big then
+            G.GAME.round_resets.blind_choices.Big =
+                pseudorandom_element(
+                    blinds,
+                    pseudoseed("tenna_big_" .. ante)
+                )
+        end
+
+        if G.GAME.round_resets.blind_choices.Boss then
+            G.GAME.round_resets.blind_choices.Boss =
+                pseudorandom_element(
+                    blinds,
+                    pseudoseed("tenna_boss_" .. ante)
+                )
+        end
+    end
+end
+
+---------------------------------------------------
+---------------tv time CODE start -----------------
+---------------------------------------------------
+SMODS.Atlas({
+    key = "Blinds",
+    atlas_table = "ASSET_ATLAS",
+    path = "Blinds.png",
+    px = 16,
+    py = 16
+})
 
 local upd = Game.update
 function Game:update(dt)
@@ -389,6 +596,187 @@ function Game:update(dt)
     end
 end
 
+SMODS.Blind{
+    key = "tennatime",
+    atlas = "Blinds", 
+    pos = {x = 0, y = 0},
+    boss = { min = 1, max = 10, hardcore = true },
+    boss_colour = HEX("ff0040"),
+
+    name = "Tenna's TV Time",
+	loc_txt = {
+        name = 'Tenna\'s TV Time',
+		text = { "ONE MORE GAME KRIS!", "2 wrong answers = DEATH" }
+    },
+    dollars = 8,
+    mult = 2,
+
+
+    calculate = function(self, card, context)
+		if context.first_hand_drawn and not G.GAME.blind.disabled then
+			G.FUNCS.start_quiz_game()
+		end
+    end,
+}
+
+-- =========================
+-- Quiz Game Container
+-- =========================
+G.QUIZ_GAME = {
+    active = false,
+    input_locked = false, 
+    timer = 0,            
+    delay_between = 5,    -- Seconds between questions
+    virtualW = 1280,
+    virtualH = 720,
+    questions = {
+        {q = "What joker do you see when opening the game?", a = 1,  a = 4, choices = {"joker", "sans", "Blueglow", "EricTheToon"}},
+        {q = "Whos grovey and never glooby?", a = 3, choices = {"the mimic", "the kight", "tenna", "EricTheToon"}},
+        {q = "Mike can we bring some waters for the kids?", a = 2, a = 1, a = 3, a = 4, choices = {"No", "No", "No", "No"}},
+        {q = "What time is it?", a = 3, choices = {"6:30", "12:00 AM", "TV TIME!!!", "muffen time"}},
+        {q = "Who made balatro?", a = 2, choices = {"EricTheToon", "LocalThunk", "stephylicious", "JIMBO,"}},
+        {q = "How many jokers are in normal balatro?", a = 4, choices = {"3", "156", "1987", "150"}},
+        {q = "Who is that [[clown around town]]?", a = 1, a = 4, choices = {"Jevil", "cancer", "ned", "jimbo"}},
+        {q = "Who is that funny skellington thats here on late nights?", a = 1, a = 2, choices = {"sans", "papirus", "jack skellington", "skull troper"}},
+        {q = "what type of pasta is ready?", a = 2, choices = {"cheezy", "creapy", "crac", "yummy"}},
+
+    },
+    current_q = nil,
+    wrong_count = 0,
+    font = nil
+}
+
+-- =========================
+-- Initialization
+-- =========================
+G.FUNCS = G.FUNCS or {}
+G.FUNCS.start_quiz_game = function()
+    local qz = G.QUIZ_GAME
+    qz.active = true
+    qz.wrong_count = 0
+    qz.timer = 1 
+    qz.font = love.graphics.newFont(32)
+    qz.current_q = nil
+    qz.input_locked = false -- Start unlocked until first question pops
+end
+
+-- =========================
+-- Logic Handling
+-- =========================
+function answer_quiz(index)
+    local qz = G.QUIZ_GAME
+    if not qz.current_q then return end
+
+    if index == qz.current_q.a then
+    else
+        qz.wrong_count = qz.wrong_count + 1
+    end
+
+    -- CLEANUP AFTER ANSWER
+    qz.current_q = nil
+    qz.input_locked = false -- UNLOCK input immediately after answering
+    qz.timer = qz.delay_between
+
+    if qz.wrong_count >= 2 then
+        qz.active = false
+        G.GAME.DR_ForcedFail = true
+    end
+end
+
+-- =========================
+-- Hooks & Callbacks
+-- =========================
+
+-- Mouse Lock Hook
+local old_mouse = love.mousepressed
+function love.mousepressed(x, y, button)
+    -- Only block if a question is actually being displayed
+    if G.QUIZ_GAME.active and G.QUIZ_GAME.current_q and G.QUIZ_GAME.input_locked then 
+        return 
+    end
+    if old_mouse then old_mouse(x, y, button) end
+end
+
+-- Key Listener
+local old_keypressed = love.keypressed
+function love.keypressed(key)
+    if old_keypressed then old_keypressed(key) end
+    local qz = G.QUIZ_GAME
+    if qz.active and qz.current_q then
+        if key == "1" then answer_quiz(1) end
+        if key == "2" then answer_quiz(2) end
+        if key == "3" then answer_quiz(3) end
+        if key == "4" then answer_quiz(4) end
+    end
+end
+
+-- Update Loop
+local old_upd = Game.update
+function Game:update(dt)
+    if old_upd then old_upd(self, dt) end
+    local qz = G.QUIZ_GAME
+
+    -- Triggering logic
+    if G.GAME.blind and G.GAME.blind.config and G.GAME.blind.config.key == "bl_tenna_show" then
+        if not qz.active then
+            if pseudorandom('tenna_q') < 0.001 then 
+                G.FUNCS.start_quiz_game()
+            end
+        end
+    end
+
+    -- Timer & Auto-Lock Logic
+    if qz.active and not qz.current_q then
+        qz.timer = qz.timer - dt
+        if qz.timer <= 0 then
+            qz.current_q = qz.questions[math.random(#qz.questions)]
+            qz.input_locked = true -- LOCK input only when a question appears
+        end
+    end
+end
+
+-- Draw Loop
+local old_draw = love.draw
+function love.draw()
+    if old_draw then old_draw() end
+    
+    local qz = G.QUIZ_GAME
+    if not qz.active then return end
+
+    love.graphics.push("all") 
+    local realW, realH = love.graphics.getDimensions()
+    love.graphics.scale(realW / qz.virtualW, realH / qz.virtualH)
+
+    if qz.current_q then
+        -- Darken screen only when question is visible
+        love.graphics.setColor(0, 0, 0, 0.85)
+        love.graphics.rectangle("fill", 0, 0, qz.virtualW, qz.virtualH)
+
+        love.graphics.setColor(1, 1, 1, 1)
+        if qz.font then love.graphics.setFont(qz.font) end
+
+        love.graphics.printf(qz.current_q.q, 0, 200, qz.virtualW, "center")
+        for i, choice in ipairs(qz.current_q.choices) do
+            love.graphics.printf(i .. ": " .. choice, 0, 300 + (i * 60), qz.virtualW, "center")
+        end
+    end
+    
+    -- Strike HUD (stays visible while active, even between questions)
+    if qz.font then
+        love.graphics.setFont(qz.font)
+        love.graphics.setColor(1, 0.3, 0.3, 1)
+        love.graphics.print("STRIKES: " .. qz.wrong_count .. " / 2", 50, 50)
+    end
+
+    love.graphics.pop() 
+end
+
+local end_round_original = end_round
+function end_round()
+    -- Call the original end_round
+    end_round_original()
+	G.QUIZ_GAME.active = false
+end
 
 
 ---------------------------------------------------
@@ -987,6 +1375,7 @@ end
 -------------------end of lazer---------------
 ----------------------------------------------
 
+           
 ------------INIT LOG--------------------------
 ----------------------------------------------
 
