@@ -393,7 +393,7 @@ end
 loc_colour()
 G.C.ITEMS = HEX("f87b22")
 G.C.ITEMS_SECONDARY = HEX("f87b22")
-G.ARGS.LOC_COLOURS["runelatro_Items"] = G.C.ITEMS
+G.ARGS.LOC_COLOURS["Deltalatro_Items"] = G.C.ITEMS
 
 SMODS.ConsumableType {
   key = "Items",
@@ -723,6 +723,7 @@ SMODS.Consumable {
         name = "Rouxls Kaard",   -- he kills both in multiplayer thanks mp
         text = {
             "thoust blind shalt be 50% easier",     --cant fix fortlatro x multiplayer
+            "art by Vega", 
         }
     },
  
