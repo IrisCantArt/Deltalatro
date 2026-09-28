@@ -365,7 +365,7 @@ SMODS.Joker{
             "Every Blind is a {C:attention}Boss Blind{}",
             "Gain {X:mult,C:white}X#1#{} Mult",
             "for every {C:attention}Boss Blind{} defeated"
-            "{C:inactive}art by Vega{}"
+            "{C:inactive}art by Vega{}",
         }
     },
     atlas = "Jokers",
