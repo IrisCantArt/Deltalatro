@@ -2013,13 +2013,13 @@ SMODS.Joker{
         text = {
             "Gain {X:mult,C:white}X2{} Mult",
             "if hand contains a {C:hearts}Heart{} shaped object",
-            "Opens a BIG SHOT shop"
+            "Opens a new spamton shop"
         }
     },
 
     rarity = 1,
 
-    cost = 6,
+    cost = 4,
 
     calculate = function(
         self,
